@@ -35,7 +35,7 @@ public class Percolation {
         int index = (row-1) * COL + (col);
         // System.out.println("[root] index = " + index);
         while (this.id[row-1][col-1] != -1 && index != this.id[row-1][col-1])  {
-            System.out.println("index " + index + ", row/col " + row + ", " + col + ", id " + this.id[row-1][col-1]);
+            // System.out.println("index " + index + ", row/col " + row + ", " + col + ", id " + this.id[row-1][col-1]);
             // row--;
             // col--;
             // index = (row-1) * COL + (col);
@@ -44,18 +44,26 @@ public class Percolation {
             row = new_row + 1;
             col = new_col;
             index = (row-1) * COL + (col);
-            System.out.println("--NEW index " + index + ", row/col " + row + ", " + col + ", id " + this.id[row-1][col-1]);
+            // System.out.println("--NEW index " + index + ", row/col " + row + ", " + col + ", id " + this.id[row-1][col-1]);
         }
-        if (this.id[row-1][col-1] > -1 )
-            System.out.println("return root is " + this.id[row-1][col-1]);
+        if (this.id[row-1][col-1] > -1 ) {
+            // System.out.println("root of [" + row+ "," + col + "] is " + this.id[row - 1][col - 1]);
+        }
         return this.id[row-1][col-1];
     }
 
     private void union(int row1, int col1, int row2, int col2) {
-        if (root(row1, col1) < root(row2, col2)) {
-            id[row2-1][col2-1] = id[row1-1][col1-1];
+        int root1 = root(row1, col1);
+        int root2 = root(row2, col2);
+        System.out.println("root of [" + row1 + "," + col1 + "] = " + root1 + " [" + row2 + "," + col2 + "] = " + root2);
+
+        if (root1 < root2) {
+            System.out.println("Merge [" + row2 + "," + col2 + "] to [" + row1 + "," + col1 + "]");
+            this.id[row2-1][col2-1] = this.id[row1-1][col1-1];
+
         } else {
-            id[row1-1][col1-1] = id[row2-1][col2-1];
+            System.out.println("Merge [" + row1 + "," + col1 + "] to [" + row2 + "," + col2 + "]");
+            this.id[row1-1][col1-1] = this.id[row2-1][col2-1];
         }
     }
 
@@ -68,30 +76,25 @@ public class Percolation {
             if (!isOpen(row, col)){
                 openSiteCount += 1;
                 int set_id = (row - 1) * COL +  (col) ;
-                if(row == 1) {
-                    // this.id[row-1][col-1] = 1;
-                    this.id[row - 1][col - 1] = set_id;
-                } else {
-                    this.id[row - 1][col - 1] = set_id;
-                }
+                this.id[row - 1][col - 1] = set_id;
 
                 System.out.println("Open site " + row + ", " + col + " to id " + set_id + ", out = " +  this.id[row - 1][col - 1] );
-                if(isOpen(row - 1, col)) {
-                    System.out.println("Merge (" + row + "," + col + ") with (" + (row-1) + "," + col);
+                if(row - 1 > 0 && isOpen(row - 1, col)) {
+                    System.out.println("Merge (" + row + "," + col + ") with (" + (row-1) + "," + col + ")");
                     union(row, col, row - 1, col);
                 }
-                // if(isOpen(row, col -1)) {
-                //     System.out.println("Merge (" + row + "," + col + ") with (" + (row) + "," + (col-1));
-                //     union(row, col, row, col - 1);
-                // }
-                // if(isOpen(row + 1, col)) {
-                //     System.out.println("Merge (" + row + "," + col + ") with (" + (row+1) + "," + col);
-                //     union(row, col, row + 1, col);
-                // }
-                // if(isOpen(row, col + 1)) {
-                //     System.out.println("Merge (" + row + "," + col + ") with (" + (row) + "," + (col+1));
-                //     union(row, col, row, col + 1);
-                // }
+                if(col - 1 > 0 && isOpen(row, col -1)) {
+                    System.out.println("Merge (" + row + "," + col + ") with (" + (row) + "," + (col-1) + ")");
+                    union(row, col, row, col - 1);
+                }
+                if(row + 1 < ROW && isOpen(row + 1, col)) {
+                    System.out.println("Merge (" + row + "," + col + ") with (" + (row+1) + "," + col + ")");
+                    union(row, col, row + 1, col);
+                }
+                if(col + 1 < COL && isOpen(row, col + 1)) {
+                    System.out.println("Merge (" + row + "," + col + ") with (" + (row) + "," + (col+1) + ")");
+                    union(row, col, row, col + 1);
+                }
             }
         }
         catch (IllegalArgumentException e) {
@@ -122,8 +125,9 @@ public class Percolation {
 
     // does the system percolate?
     public boolean percolates(){
-        for (int i =0; i < COL; i++){
-            if(root(ROW, i+1) <= COL){
+        for (int i = 0; i < COL; i++){
+
+            if(root(ROW, i+1) != -1 && root(ROW, i+1) <= COL){
                 return true;
             }
         }

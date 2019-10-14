@@ -6,7 +6,6 @@
 public class Percolation {
     private int ROW = 0;
     private int COL = 0;
-    private int[][] openMap = null;
     private int[][] id = null;
     private int openSiteCount = 0;
 
@@ -17,8 +16,6 @@ public class Percolation {
         }
         this.ROW = n;
         this.COL = n;
-        // this.openMap = new int[n][n];
-        // Arrays.fill(openMap, 0);
         this.id = new int[n][n];
 
         for (int i = 0; i < n; i++){
@@ -32,39 +29,53 @@ public class Percolation {
         if (row < 1 || row > ROW || col < 1 || col > COL){
             throw new IllegalArgumentException();
         }
-        int index = (row-1) * COL + (col);
-        // System.out.println("[root] index = " + index);
-        while (this.id[row-1][col-1] != -1 && index != this.id[row-1][col-1])  {
-            // System.out.println("index " + index + ", row/col " + row + ", " + col + ", id " + this.id[row-1][col-1]);
-            // row--;
-            // col--;
-            // index = (row-1) * COL + (col);
-            int new_row = (int)(this.id[row-1][col-1] / COL);
-            int new_col = this.id[row-1][col-1] % COL;
-            row = new_row + 1;
-            col = new_col;
-            index = (row-1) * COL + (col);
-            // System.out.println("--NEW index " + index + ", row/col " + row + ", " + col + ", id " + this.id[row-1][col-1]);
+        while (id[row-1][col-1] != calculateId(row-1, col-1)) {
+            Integer [] coord = calculateCoor(id[row-1][col-1]);
+
+            row = coord[0] + 1;
+            col = coord[1] + 1;
         }
-        if (this.id[row-1][col-1] > -1 ) {
-            // System.out.println("root of [" + row+ "," + col + "] is " + this.id[row - 1][col - 1]);
-        }
-        return this.id[row-1][col-1];
+        return id[row-1][col-1];
     }
 
     private void union(int row1, int col1, int row2, int col2) {
-        int root1 = root(row1, col1);
-        int root2 = root(row2, col2);
-        System.out.println("root of [" + row1 + "," + col1 + "] = " + root1 + " [" + row2 + "," + col2 + "] = " + root2);
-
-        if (root1 < root2) {
-            System.out.println("Merge [" + row2 + "," + col2 + "] to [" + row1 + "," + col1 + "]");
-            this.id[row2-1][col2-1] = this.id[row1-1][col1-1];
-
-        } else {
-            System.out.println("Merge [" + row1 + "," + col1 + "] to [" + row2 + "," + col2 + "]");
-            this.id[row1-1][col1-1] = this.id[row2-1][col2-1];
+        if(id[row2-1][col2-1] < 0){
+            return;
         }
+        if (root(row1, col1) < root(row2, col2)){
+            System.out.println("root(row1, col1) = " + root(row1, col1) + " < root(row2, col2) = " + root(row2, col2));
+            Integer [] coord = calculateCoor(id[row2-1][col2-1]);
+            id[coord[0]][coord[1]] = root(row1, col1);
+            System.out.println("---- root(row1, col1) = " + root(row1, col1) + ", root(row2, col2) = " + root(row2, col2));
+        } else {
+            System.out.println("root(row1, col1) = " + root(row1, col1) + " >= root(row2, col2) = " + root(row2, col2));
+            Integer [] coord = calculateCoor(id[row1-1][col1-1]);
+            id[coord[0]][coord[1]] = root(row2, col2);
+            // id[row1-1][col1-1] = id[row2 -1][col2 -1];
+            System.out.println("---- root(row1, col1) = " + root(row1, col1) + ", root(row2, col2) = " + root(row2, col2));
+        }
+
+        for (int i = 1; i <= ROW; i++){
+            for (int j = 1; j <= COL; j++) {
+                if(this.id[i-1][j-1] > -1 ){
+                    System.out.println("** at ["+ i + "," + j+ "] value is " + this.id[i-1][j-1]);
+                }
+            }
+        }
+    }
+
+    private int calculateId(int row, int col){
+        int id = row * COL + col;
+        // System.out.println("-- id, col, row " + id + ", " + row + ", " + col);
+        return row * COL + col;
+    }
+
+    private Integer[] calculateCoor(int id) {
+        Integer[] coord = new Integer[2];
+        coord[0] = (int)(id / COL);
+        coord[1] = id % COL;
+        // System.out.println("- id, col, row " + id + ", " + coord[0] + ", " + coord[1]);
+        return coord;
     }
 
     // opens the site (row, col) if it is not open already
@@ -72,33 +83,28 @@ public class Percolation {
         if (row < 1 || row > ROW || col < 1 || col > COL){
             throw new IllegalArgumentException();
         }
-        try {
-            if (!isOpen(row, col)){
-                openSiteCount += 1;
-                int set_id = (row - 1) * COL +  (col) ;
-                this.id[row - 1][col - 1] = set_id;
-
-                System.out.println("Open site " + row + ", " + col + " to id " + set_id + ", out = " +  this.id[row - 1][col - 1] );
-                if(row - 1 > 0 && isOpen(row - 1, col)) {
-                    System.out.println("Merge (" + row + "," + col + ") with (" + (row-1) + "," + col + ")");
-                    union(row, col, row - 1, col);
-                }
-                if(col - 1 > 0 && isOpen(row, col -1)) {
-                    System.out.println("Merge (" + row + "," + col + ") with (" + (row) + "," + (col-1) + ")");
-                    union(row, col, row, col - 1);
-                }
-                if(row + 1 < ROW && isOpen(row + 1, col)) {
-                    System.out.println("Merge (" + row + "," + col + ") with (" + (row+1) + "," + col + ")");
-                    union(row, col, row + 1, col);
-                }
-                if(col + 1 < COL && isOpen(row, col + 1)) {
-                    System.out.println("Merge (" + row + "," + col + ") with (" + (row) + "," + (col+1) + ")");
-                    union(row, col, row, col + 1);
-                }
-            }
+        // calculateCoor(2);
+        // calculateCoor(50);
+        // calculateCoor(49);
+        //
+        // calculateId(0, 2);
+        // calculateId(5, 0);
+        // calculateId(2, 9);
+        if(!isOpen(row, col)){
+            // id[row-1][col -1] = row - 1;
+            id[row-1][col-1] = calculateId(row -1, col -1);
         }
-        catch (IllegalArgumentException e) {
-
+        if(row > 1) {
+            union(row, col, row - 1, col);
+        }
+        if(col > 1) {
+            union(row, col, row, col - 1);
+        }
+        if(row < ROW) {
+            union(row, col, row + 1, col);
+        }
+        if(col < COL) {
+            union(row, col, row, col + 1);
         }
     }
 
@@ -107,7 +113,7 @@ public class Percolation {
         if (row < 1 || row > ROW || col < 1 || col > COL){
             throw new IllegalArgumentException();
         }
-        return root(row, col) > -1;
+        return id[row-1][col-1] > -1;
     }
 
     // is the site (row, col) full?
@@ -115,7 +121,8 @@ public class Percolation {
         if (row < 1 || row > ROW || col < 1 || col > COL){
             throw new IllegalArgumentException();
         }
-        return root(row, col) == 1;
+        return id[row-1][col-1] > -1 && root(row, col) < COL ;
+        // return id[row-1][col-1] < COL && id[row-1][col-1] > -1;
     }
 
     // returns the number of open sites
@@ -125,9 +132,8 @@ public class Percolation {
 
     // does the system percolate?
     public boolean percolates(){
-        for (int i = 0; i < COL; i++){
-
-            if(root(ROW, i+1) != -1 && root(ROW, i+1) <= COL){
+        for(int j = 1; j <= COL; j++) {
+            if(id[ROW-1][j-1] > -1 && root(ROW, j) < COL) {
                 return true;
             }
         }

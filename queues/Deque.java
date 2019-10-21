@@ -41,7 +41,7 @@ public class Deque<Item> implements Iterable<Item> {
         }
     }
 
-    public Deque() {}
+    public Deque() { }
 
     public boolean isEmpty() {
         return this.length == 0;
@@ -89,8 +89,8 @@ public class Deque<Item> implements Iterable<Item> {
         Item toRemove;
         if(isEmpty()) {
             toRemove = last.item;
-            last = new Node();
-            first = new Node();
+            last = null;
+            first = null;
         } else {
             toRemove = first.item;
             first = first.next;
@@ -106,8 +106,8 @@ public class Deque<Item> implements Iterable<Item> {
         Item toRemove;
         if (isEmpty()) {
             toRemove = last.item;
-            last = new Node();
-            first = new Node();
+            last = null;
+            first = null;
         } else {
             Node curr = first;
             while (curr.next != last) {

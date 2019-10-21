@@ -22,20 +22,27 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
     private class RandomizedQueueInterator implements  Iterator<Item> {
         private Node current = first;
+        private int[] index = StdRandom.permutation(length);
+        private int startIdx = 0;
 
         @Override
         public boolean hasNext() {
-            return current != null;
+            return !isEmpty() && startIdx != length;
         }
 
         @Override
         public Item next() {
-            if(current == null) {
+            if(isEmpty() || startIdx >= length) {
                 throw new NoSuchElementException();
             }
-            Item item = current.item;
-            current = current.next;
-            return item;
+            int rdn = index[startIdx];
+            startIdx += 1;
+            Node node = current;
+            while(rdn != 0) {
+                node = node.next;
+                rdn -=1;
+            }
+            return node.item;
         }
 
         @Override
@@ -45,7 +52,9 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     }
 
     // construct an empty randomized queue
-    public RandomizedQueue() {}
+    public RandomizedQueue() {
+
+    }
 
     // is the randomized queue empty?
     public boolean isEmpty() {
@@ -85,15 +94,17 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         if (isEmpty()) {
             throw new NoSuchElementException();
         }
-        length -= 1;
         int rdn = StdRandom.uniform(length);
+        length -= 1;
         Item toRemove = null;
 
         if (isEmpty()) {
             toRemove = first.item;
             first = new Node();
             last = new Node();
-        } else if (rdn == 0) {
+            return toRemove;
+        }
+        if (rdn == 0) {
             return dequeueFirst();
         } else {
             Node iter  = first;
@@ -116,7 +127,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         }
         int rdn = StdRandom.uniform(length);
         Node iter  = first;
-        while(rdn != 0) {
+        while (rdn != 0) {
             iter = iter.next;
             rdn --;
         }

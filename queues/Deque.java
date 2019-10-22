@@ -15,6 +15,7 @@ public class Deque<Item> implements Iterable<Item> {
     private class Node {
         Item item;
         Node next;
+        Node previous;
     }
 
     private class DequeInterator implements  Iterator<Item> {
@@ -62,6 +63,7 @@ public class Deque<Item> implements Iterable<Item> {
             first = last;
         } else {
             oldLast.next = last;
+            last.previous = oldLast;
         }
         length += 1;
     }
@@ -77,6 +79,7 @@ public class Deque<Item> implements Iterable<Item> {
             last = first;
         } else {
             first.next = oldFirst;
+            oldFirst.previous = first;
         }
         length += 1;
     }
@@ -94,6 +97,7 @@ public class Deque<Item> implements Iterable<Item> {
         } else {
             toRemove = first.item;
             first = first.next;
+            first.previous = null;
         }
         return toRemove;
     }
@@ -109,13 +113,9 @@ public class Deque<Item> implements Iterable<Item> {
             last = null;
             first = null;
         } else {
-            Node curr = first;
-            while (curr.next != last) {
-                curr = curr.next;
-            }
-            curr.next = null;
             toRemove = last.item;
-            last = curr;
+            last = last.previous;
+            last.next = null;
         }
         return toRemove;
     }

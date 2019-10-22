@@ -17,7 +17,6 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     private class Node {
         Item item;
         Node next;
-        Node before;
     }
 
     private class RandomizedQueueInterator implements  Iterator<Item> {
@@ -74,19 +73,13 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         Node oldLast = last;
         last = new Node();
         last.item = item;
-        last.before = oldLast;
+        // last.before = oldLast;
         if (isEmpty()) {
             first = last;
         } else {
             oldLast.next = last;
         }
         length += 1;
-    }
-
-    private Item dequeueFirst() {
-        Item toRemove = first.item;
-        first = first.next;
-        return toRemove;
     }
 
     // remove and return a random item
@@ -98,26 +91,29 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         length -= 1;
         Item toRemove = null;
 
-        if (isEmpty()) {
+        if (length == 0) {
             toRemove = first.item;
-            first = new Node();
-            last = new Node();
+            first = null;
+            last = null;
             return toRemove;
         }
-        if (rdn == 0) {
-            return dequeueFirst();
-        } else {
-            Node iter  = first;
-            Node before = null;
-            while(rdn != 0) {
-                before = iter;
-                iter = iter.next;
-                rdn --;
-            }
-            before.next = iter.next;
-            toRemove = iter.item;
+
+        Node iter  = first;
+        Node before = null;
+        while(rdn-- > 0) {
+            before = iter;
+            iter = iter.next;
         }
-        return toRemove;
+        if(before != null) {
+            before.next = iter.next;
+        } else {
+            first = iter.next;
+        }
+        if(iter == last) {
+            last = before;
+        }
+        // toRemove = iter.item;
+        return iter.item;
     }
 
     // return a random item (but do not remove it)
@@ -127,12 +123,11 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         }
         int rdn = StdRandom.uniform(length);
         Node iter  = first;
-        while (rdn != 0) {
+        while (rdn-- > 0) {
             iter = iter.next;
-            rdn --;
         }
         return iter.item;
-    }
+}
 
     // return an independent iterator over items in random order
     public Iterator<Item> iterator() {

@@ -22,12 +22,12 @@ public class RandomizedQueue<Item> implements Iterable<Item>  {
 
         @Override
         public boolean hasNext() {
-            return !isEmpty() && startIdx != length;
+            return !isEmpty() && startIdx != N;
         }
 
         @Override
         public Item next() {
-            if(isEmpty()) {
+            if(!hasNext()) {
                 throw new NoSuchElementException();
             }
             int rdn = index[startIdx];

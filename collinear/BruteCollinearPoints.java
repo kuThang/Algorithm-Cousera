@@ -11,6 +11,13 @@ import edu.princeton.cs.algs4.StdOut;
 public class BruteCollinearPoints {
     Point [] pts;
     int segmentCount = 0;
+
+    private class LineStack{
+        // private
+    }
+    private class LineNode{
+        // public
+    }
     LineSegment [] segs = new LineSegment[1];
     boolean [] inLine;
 
@@ -26,22 +33,61 @@ public class BruteCollinearPoints {
         }
         pts = new Point[points.length];
         inLine = new boolean[points.length];
+        int minY = 0;
+        int minIdx = -1;
+        int maxY = Integer.MAX_VALUE;
+        int maxIdx = -1;
+
+        Point [] sorted = new Point[4];
         for (int i = 0; i < points.length; i++) {
             if (points[i] == null)
                 throw new IllegalArgumentException();
-
-            pts[i] = points[i];
-            for (int j = i; j >= 0; j--) {
-                int compare = pts[j].compareTo(pts[j-1]);
-                if (compare == 0)
+            sorted[i] = points[i];
+            int currentIndex = i;
+            for (int j = i; j >= 1; j++) {
+                int compare = sorted[currentIndex].compareTo(sorted[j-1]);
+                if (compare == 0) {
                     throw new IllegalArgumentException();
-                else if (compare < 0) {
-                    exchange(j, j-1);
-                } else
-                    break;
+                } else if (compare < 0) {
+                    exchange(currentIndex, j-1);
+                    currentIndex = j-1;
+                }
             }
         }
-        computeLines();
+
+        double slope = points[0].slopeTo(points[1]);
+        if (slope == points[0].slopeTo(points[2]) && slope == points[0].slopeTo(points[2])) {
+            segs[0] = new LineSegment(new Point(10000, 0), new Point(0, 10000));
+        }
+
+        boolean checked = false;
+
+
+        for (int i = 0; i < points.length; i++) {
+            checked = false;
+            if (points[i] == null)
+                throw new IllegalArgumentException();
+
+            for (int j = i; j >= 1; j--) {
+                int compare = points[j].compareTo(points[j-1]);
+                if (compare == 0)
+                    throw new IllegalArgumentException(); // same point
+                else if (compare < 0) {
+
+                }
+
+                if (i == 1) {
+                    slope = points[i].slopeTo(points[j]);
+                } else {
+                    if (!checked && slope != points[i].slopeTo(points[j])) {
+                        return;
+                    } else {
+                        checked = true;
+                    }
+                }
+            }
+        }
+        // computeLines();
         // segs[0] = new LineSegment(new Point(10000, 0), new Point(0, 10000));
     }    // finds all line segments containing 4 points
 

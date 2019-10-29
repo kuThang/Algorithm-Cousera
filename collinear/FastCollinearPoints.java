@@ -19,17 +19,22 @@ public class FastCollinearPoints {
         points[j] = temp;
     }
 
+
+
     private void computeLines(Point[] points) {
         for (int i = 0; i < points.length; i++) {
             if (points[i] == null)
                 throw new IllegalArgumentException();
 
-            double[] slopes = new double[points.length -1];
+            double[] slopes = new double[points.length - 1 - i];
+
             for (int j = i + 1; j < points.length; j++) {
-                if(points[j].compareTo(points[i]) == ){
+                double slope = points[i].slopeTo(points[j]);
+                if(slope == Double.NEGATIVE_INFINITY) {
                     throw new IllegalArgumentException();
                 }
-                slopes[i-1] = points[i].slopeTo(points[j]);
+                slopes[j - i - 1] = points[i].slopeTo(points[j]);
+
             }
 
         }

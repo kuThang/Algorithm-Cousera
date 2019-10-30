@@ -9,7 +9,7 @@ import edu.princeton.cs.algs4.StdDraw;
 import edu.princeton.cs.algs4.StdOut;
 
 public class BruteCollinearPoints {
-    // Point [] pts;
+    private Point [] pts;
     private int lineCount = 0;
     private LineSegment [] lineSegments = new LineSegment[1];
 
@@ -23,25 +23,29 @@ public class BruteCollinearPoints {
         if (points == null || points.length == 0) {
             throw new IllegalArgumentException();
         }
-
+        if(points.length < 4) {
+            return;
+        }
+        pts = new Point[points.length];
         for (int i = 0; i < points.length; i++) {
             if (points[i] == null)
                 throw new IllegalArgumentException();
+            pts[i] = points[i];
             for (int j = i; j >= 1; j--) {
-                int compare = points[j].compareTo(points[j-1]);
+                int compare = pts[j].compareTo(pts[j-1]);
                 if (compare == 0) {
                     throw new IllegalArgumentException();
                 } else if (compare < 0) {
-                    exchange(points, j, j-1);
+                    exchange(pts, j, j-1);
                 }
             }
         }
 
-        for (int i = 0; i < points.length - 3; i++) {
-            for (int j = i + 1; j < points.length - 2; j++) {
-                for (int x = j + 1; x < points.length - 1; x++) {
-                    for(int y = x + 1; y < points.length; y ++) {
-                        computeLines(points[i], points[j], points[x], points[y]);
+        for (int i = 0; i < pts.length - 3; i++) {
+            for (int j = i + 1; j < pts.length - 2; j++) {
+                for (int x = j + 1; x < pts.length - 1; x++) {
+                    for(int y = x + 1; y < pts.length; y ++) {
+                        computeLines(pts[i], pts[j], pts[x], pts[y]);
                     }
                 }
             }

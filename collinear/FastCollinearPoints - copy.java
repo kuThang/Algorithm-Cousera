@@ -9,8 +9,12 @@ import edu.princeton.cs.algs4.StdDraw;
 import edu.princeton.cs.algs4.StdOut;
 
 public class FastCollinearPoints {
+    // Point [] pts;
     private int lineCount = 0;
-    private LineSegment [] lineSegments = new LineSegment[1];
+    // private LineSegment [] lineSegments = new LineSegment[1];
+    private double [] lineSlopes = new double[1];
+    private Point [] startPoint = new Point[1];
+    private Point [] endPoint = new Point[1];
 
     private void swap(int[] slopes, int i, int j) {
         int temp = slopes[i];
@@ -18,7 +22,7 @@ public class FastCollinearPoints {
         slopes[j] = temp;
     }
 
-    private void addLine(Point[] points, int base, int[] idx, int start, int end) {
+    private void addLine(double slope, Point[] points, int base, int[] idx, int start, int end) {
         int min = base;
         int max = base;
         for (int i = start; i < end; i++) {
@@ -30,14 +34,35 @@ public class FastCollinearPoints {
             }
         }
 
-        if(lineCount == lineSegments.length) {
-            LineSegment[] temp = lineSegments;
-            lineSegments = new LineSegment[lineCount * 2];
-            for (int i=0; i < temp.length; i++) {
-                lineSegments[i] = temp[i];
+        for (int i=0; i < lineCount; i++) {
+            if (slope == lineSlopes[i]) {
+                if (startPoint[i].compareTo(points[min]) < 0) {
+                    startPoint[i] = points[min];
+                }
+                if (endPoint[i].compareTo(points[max]) > 0) {
+                    endPoint[i] = points[max];
+                }
+                return;
             }
         }
-        lineSegments[lineCount++] = new LineSegment(points[min], points[max]);
+
+        if(lineCount == startPoint.length) {
+            Point[] temp1 = startPoint;
+            Point[] temp2 = endPoint;
+            double [] tempSlopes = lineSlopes;
+            startPoint = new Point[lineCount * 2];
+            endPoint = new Point[lineCount * 2];
+            lineSlopes = new double[lineCount * 2];
+            for (int i=0; i < temp1.length; i++) {
+                startPoint[i] = temp1[i];
+                endPoint[i] = temp2[i];
+                lineSlopes[i] = tempSlopes[i];
+            }
+        }
+        startPoint[lineCount] = points[min];
+        endPoint[lineCount] = points[max];
+        lineSlopes[lineCount] = slope;
+        lineCount++;
     }
 
     private void swap(double[] slopes, int i, int j) {
@@ -77,7 +102,7 @@ public class FastCollinearPoints {
             for (int k = 0; k < slopes.length; k++) {
                 if(lastScore != slopes[k]) {
                     if ( countSame >= 3 ) {
-                        addLine(points, i, idx, start, k);
+                        addLine(lastScore, points, i, idx, start, k);
                     }
                     countSame = 1;
                     start = k;
@@ -88,7 +113,7 @@ public class FastCollinearPoints {
                 }
             }
             if ( countSame >= 3 ) {
-                addLine(points, i, idx, start, idx.length);
+                addLine(lastScore, points, i, idx, start, idx.length);
             }
         }
         return;
@@ -111,11 +136,15 @@ public class FastCollinearPoints {
     }
 
     public LineSegment[] segments() {
-        LineSegment [] result = new LineSegment[lineCount];
-        for (int i = 0; i < lineCount; i++) {
-            result[i] = lineSegments[i];
+        if(lineCount == 0) {
+            return new LineSegment[0];
         }
-        return result;
+
+        LineSegment [] lineSegments = new LineSegment[lineCount];
+        for (int i = 0; i < lineCount; i++) {
+            lineSegments[i] = new LineSegment(startPoint[i], endPoint[i]);
+        }
+        return lineSegments;
     }
 
     public static void main(String[] args) {

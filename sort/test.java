@@ -7,62 +7,53 @@
 import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.Stopwatch;
 
-public class test {
-    private static int[] createArray(int n){
-        int[] array = StdRandom.permutation(n);
-        return array;
-    }
+import java.util.Arrays;
 
-    private static void printValue(int[] a, int k) {
-        int count = 0;
-        while(count < k) {
-            System.out.println(a[count]);
-            count ++;
-        }
-    }
-    private static void testInsertionSort(int n){
-        int[] array = createArray(n);
-        // printValue(array, 10);
-        System.out.println("---");
-        Stopwatch stw = new Stopwatch();
-        InsertionSort.sort(array);
-        double times = stw.elapsedTime();
-        System.out.println("InsertionSort n = " + n + ", time in second \t\t" + times);
-        // printValue(array, 10);
-    }
-    private static void testSelectionSort(int n){
-        // int[] array = createArray(n);
+public class test {
+    private static Score[] createData(int n) {
         int[] array = StdRandom.permutation(n);
         Score[] scores = new Score[n];
         for (int i : array) {
             scores[i] = new Score(array[i]);
         }
-        // printValue(array, 10);
-        System.out.println("---");
-        Stopwatch stw = new Stopwatch();
-        SelectionSort.sort(scores);
-        double times = stw.elapsedTime();
-        System.out.println("SelectionSort n = " + n + ", time in second \t\t" + times);
-        // printValue(array, 10);
+        return scores;
+    }
 
+    private static void printValue(Score[] a, int k) {
         int count = 0;
-        while(count < 10) {
-            System.out.println(scores[count].getValue());
+        while(count < k) {
+            System.out.println(a[count].getScore());
             count ++;
         }
     }
-    private static void testShellSort(int n){
-        int[] array = createArray(n);
-        System.out.println("---");
+
+    private static void runSort(String type, int n) {
+        Score[] scores = createData(n);
+        printValue(scores, 10);
+
         Stopwatch stw = new Stopwatch();
-        ShellShort.sort(array);
+        switch (type){
+            case "SelectionSort":
+                SelectionSort.sort(scores);
+            case "ShellSort":
+                ShellSort.sort(scores);
+            case "InsertionSort":
+                InsertionSort.sort(scores);
+        }
+
         double times = stw.elapsedTime();
-        System.out.println("ShellShort n = " + n + ", time in second \t\t" + times);
-        printValue(array, 10);
+        System.out.println(type + " n = " + n + ", time in second \t\t" + times);
+        printValue(scores, 10);
     }
+
     public static void main(String[] args) {
-        // testInsertionSort(10000);
-        testSelectionSort(10000);
-        // testShellSort(10000);
+        // runSort("SelectionSort", 10000);
+        runSort("ShellSort", 10000);
+        // runSort("InsertionSort", 10000);
+
+        Integer[] arr = {3, 4, 1, 5, 10, 7, 2};
+        // InsertionSort selectionSort = new InsertionSort();
+        ShellSort.sort(arr);
+        System.out.println("After sorting  int : "+ Arrays.toString(arr));
     }
 }

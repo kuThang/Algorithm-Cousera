@@ -6,31 +6,38 @@
 
 import java.util.Arrays;
 
-public class InsertionSort {
+public class ShellSort {
     public static <Key extends Comparable<Key>> void sort(Key[] a) {
+        int step = 1;
         int N = a.length;
-        for (int i = 0; i < N; i++) {
-            for (int j = i; j > 0; j--) {
-                if (less(a[j], a[j - 1])) {
-                    exchange(a, j, j - 1);
-                } else break;
+
+        while (step < N/3) step = step * 3 + 1;
+        while (step >= 1) {
+            for (int i = step; i < N; i ++) {
+                for (int j = i; j >= step; j-= step) {
+                    if (less(a[j], a[j - step])) {
+                        exchange(a, j, j - step);
+                    } else break;
+
+                }
             }
+            step = step / 3;
         }
     }
 
-    private static void exchange(Comparable[] a, int i, int j) {
+    private static void exchange(Comparable[]a, int i, int j) {
         Comparable temp = a[i];
         a[i] = a[j];
         a[j] =temp;
     }
 
-    private static <Key extends Comparable<Key>>  boolean less(Key v, Key w) {
+    private static <Key extends Comparable<Key>> boolean less(Key v, Key w) {
         return v.compareTo(w) < 0;
     }
 
     public static void main(String[] args) {
         Integer[] arr = {3, 4, 1, 5, 10, 7, 2};
-        InsertionSort sort = new InsertionSort();
+        ShellSort sort = new ShellSort();
         sort.sort(arr);
         System.out.println("After sorting  int : "+ Arrays.toString(arr));
 

@@ -7,8 +7,6 @@
 import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.Stopwatch;
 
-import java.util.Arrays;
-
 public class test {
     private static Score[] createData(int n) {
         int[] array = StdRandom.permutation(n);
@@ -29,7 +27,7 @@ public class test {
 
     private static void runSort(String type, int n) {
         Score[] scores = createData(n);
-        printValue(scores, 10);
+        // printValue(scores, 10);
 
         Stopwatch stw = new Stopwatch();
         switch (type){
@@ -39,21 +37,24 @@ public class test {
                 ShellSort.sort(scores);
             case "InsertionSort":
                 InsertionSort.sort(scores);
+            case "MergeSort":
+                MergeSort.sort(scores);
         }
 
         double times = stw.elapsedTime();
         System.out.println(type + " n = " + n + ", time in second \t\t" + times);
-        printValue(scores, 10);
+        // printValue(scores, 10);
     }
 
     public static void main(String[] args) {
-        // runSort("SelectionSort", 10000);
-        runSort("ShellSort", 10000);
-        // runSort("InsertionSort", 10000);
+        // runSort("InsertionSort", 100000);
+        // runSort("SelectionSort", 100000);
+        runSort("ShellSort", 100000);
+        runSort("MergeSort", 100000);
 
-        Integer[] arr = {3, 4, 1, 5, 10, 7, 2};
-        // InsertionSort selectionSort = new InsertionSort();
-        ShellSort.sort(arr);
-        System.out.println("After sorting  int : "+ Arrays.toString(arr));
+        // Integer[] arr = {3, 4, 1, 5, 10, 7, 2};
+        // // InsertionSort selectionSort = new InsertionSort();
+        // ShellSort.sort(arr);
+        // System.out.println("After sorting  int : "+ Arrays.toString(arr));
     }
 }

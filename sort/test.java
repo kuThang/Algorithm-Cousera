@@ -39,6 +39,8 @@ public class test {
                 InsertionSort.sort(scores);
             case "MergeSort":
                 MergeSort.sort(scores);
+            // case "MergeSortBottomUp":
+            //     MergeSortBottomUp.sort(scores);
         }
 
         double times = stw.elapsedTime();
@@ -47,14 +49,25 @@ public class test {
     }
 
     public static void main(String[] args) {
-        // runSort("InsertionSort", 100000);
-        // runSort("SelectionSort", 100000);
+        // Sort Generic
+        runSort("InsertionSort", 10000);
+        runSort("SelectionSort", 10000);
         runSort("ShellSort", 100000);
-        runSort("MergeSort", 100000);
+        runSort("MergeSort",         1000000);
+        runSort("MergeSortBottomUp", 1000000);
 
-        // Integer[] arr = {3, 4, 1, 5, 10, 7, 2};
-        // // InsertionSort selectionSort = new InsertionSort();
-        // ShellSort.sort(arr);
-        // System.out.println("After sorting  int : "+ Arrays.toString(arr));
+
+        // // Sort with Comparator
+        int[] array = StdRandom.permutation(100000);
+        Student[] students = new Student[100000];
+        for (int i : array) {
+            students[i] = new Student(array[i], "123");
+        }
+        MergeSortWithComparator.sort(students, Student.BY_SCORE);
+        int count = 0;
+        while(count < 10) {
+            System.out.println(students[count].getScore());
+            count ++;
+        }
     }
 }

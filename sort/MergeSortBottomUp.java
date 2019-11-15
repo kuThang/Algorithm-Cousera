@@ -6,8 +6,7 @@
 
 import java.util.Arrays;
 
-public class MergeSort {
-
+public class MergeSortBottomUp {
     private static void merge( Comparable[] a, Comparable[] aux, int low, int mid, int high) {
         for (int i = low; i <= high ; i++) {
             aux[i] = a[i];
@@ -22,18 +21,17 @@ public class MergeSort {
         }
     }
 
-    private static void sort( Comparable[] a, Comparable[] aux, int low, int high) {
-        if(high <= low) return;
-        int mid = low + (high - low) / 2;
-        sort(a, aux, low, mid);
-        sort(a, aux, mid + 1, high);
-        if(!less(a[mid+1], a[mid])) return;
-        merge(a, aux, low, mid, high);
-    }
-
     public static <Key extends Comparable<Key>> void sort(Key[] a)  {
         Comparable[] aux = new Comparable[a.length];
-        sort(a, aux, 0,  a.length - 1);
+        // sort(a, aux, 0,  a.length - 1);
+        int N = a.length;
+        int sz = 1;
+        while(sz < N) {
+            for(int low = 0; low < N - sz; low += 2*sz) {
+                merge(a, aux, low, low + sz - 1, Math.min(low + 2*sz - 1, N-1));
+            }
+            sz = 2*sz;
+        }
     }
 
     private static <Key extends Comparable<Key>> boolean less(Key v, Key w) {
@@ -42,12 +40,11 @@ public class MergeSort {
 
     public static void main(String[] args) {
         Integer[] arr = {3, 4, 1, 5, 10, 7, 2};
-        MergeSort.sort(arr);
+        MergeSortBottomUp.sort(arr);
         System.out.println("After sorting  int : "+ Arrays.toString(arr));
 
         Double [] arr2 = { 3.4, 3.2, 3.3, 1.2, 1.9, 8.3, 7.3};
-        MergeSort.sort(arr2);
+        MergeSortBottomUp.sort(arr2);
         System.out.println("After sorting  double : "+ Arrays.toString(arr2));
-
     }
 }

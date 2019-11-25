@@ -4,8 +4,6 @@
  *  Description:
  **************************************************************************** */
 
-import edu.princeton.cs.algs4.StdRandom;
-
 import java.util.LinkedList;
 import java.util.List;
 
@@ -45,9 +43,8 @@ public class Board {
         if(tiles == null) {
             throw new NullPointerException();
         }
-        this.board = new int[n][n];
         n = tiles.length;
-
+        this.board = new int[n][n];
         for (int i = 0; i < n; i++) {
             for(int j = 0; j < n; j++) {
                 this.board[i][j] = tiles[i][j];
@@ -122,11 +119,19 @@ public class Board {
         return new Board(clone);
     }
     public static void main(String[] args) {
-        int n = 5;
+        int n = 3;
         int[][] tiles = new int[n][n];
-        int[] test = StdRandom.permutation(n);
-        for (int i = 0; i < 10; i++)
-            System.out.println(test[i]);
-        // System.out.println(test.toString());
+        tiles[0][0] =8;
+        tiles[0][1] =1;
+        tiles[0][2] =3;
+        tiles[1][0] =4;
+        tiles[1][1] =0;
+        tiles[1][2] =2;
+        tiles[2][0] =7;
+        tiles[2][1] =6;
+        tiles[2][2] =5;
+        Board board = new Board(tiles);
+        System.out.println("Hamming distance : " + board.hamming());
+        System.out.println("Manhattan distance : " + board.manhattan());
     }
 }

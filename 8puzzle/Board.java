@@ -4,6 +4,8 @@
  *  Description:
  **************************************************************************** */
 
+import edu.princeton.cs.algs4.StdOut;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -16,14 +18,17 @@ public class Board {
     private void swap(int[][]tiles, int x, int y, int dx, int dy) {
         int temp = tiles[x][y];
         tiles[x][y] = tiles[x + dx][y + dy];
-        tiles[x + dx][y + dx] = temp;
+        tiles[x + dx][y + dy] = temp;
     }
 
     private int[][] cloneBoard() {
-        int[][] newBoard = new int[n][];
-        for(int row = 0; row < n; row ++) {
-            newBoard[row] = this.board[row].clone();
+        int[][] newBoard = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                newBoard[i][j] = this.board[i][j];
+            }
         }
+
         return newBoard;
     }
 
@@ -57,11 +62,14 @@ public class Board {
     }
 
     public String toString() {
-        String returnString = String.valueOf(dimension()) + "\n";
+        String boardStr = String.valueOf(dimension()) + "\n";
         for (int i = 0; i < n; i++){
-            returnString += board[i].toString() + "\n";
+            for (int j = 0; j < n; j++) {
+                boardStr += String.format("%3d ",  board[i][j]);
+            }
+            boardStr += "\n";
         }
-        return returnString;
+        return boardStr;
     }
 
     public int dimension() {
@@ -91,11 +99,28 @@ public class Board {
         return manhattanDistance;
     }
     public boolean isGoal() {
-        return hamming() == 0;
+        // return hamming() == 0;
+        if(this.emptyRow == n - 1 && this.emptyCol == n-1) return true;
+        else return false;
     }
     public boolean equals(Object y) {
-        return board.equals(y);
+        if(y == null) return false;
+        if(y == this) return true;
+        if(this.getClass() != y.getClass()) return false;
+
+        Board that = (Board) y;
+
+        if(that.n != this.n) return false;
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (that.board[i][j] != this.board[i][j]) return false;
+            }
+        }
+
+        return true;
     }
+
     public Iterable<Board> neighbors() {
         List<Board> neighbors = new LinkedList<>();
 
@@ -115,7 +140,7 @@ public class Board {
     }
     public Board twin() {
         int[][] clone = cloneBoard();
-        swap(clone, 0, 0, 0, 1);
+        swap(clone, 0, 0, 1, 0);
         return new Board(clone);
     }
     public static void main(String[] args) {
@@ -131,7 +156,15 @@ public class Board {
         tiles[2][1] =6;
         tiles[2][2] =5;
         Board board = new Board(tiles);
+        StdOut.println(board);
         System.out.println("Hamming distance : " + board.hamming());
         System.out.println("Manhattan distance : " + board.manhattan());
+
+        for(Board b : board.neighbors()) {
+            StdOut.println("Neighbor");
+            StdOut.println(b);
+            System.out.println("Hamming distance : " + b.hamming());
+            System.out.println("Manhattan distance : " + b.manhattan());
+        }
     }
 }

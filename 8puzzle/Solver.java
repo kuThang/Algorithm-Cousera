@@ -6,78 +6,68 @@
 
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.MinPQ;
+import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.StdOut;
 
-import java.util.LinkedList;
-import java.util.List;
-
 public class Solver {
-    private MinPQ<Node> searchQueue;
-    private int moveCount;
-    private boolean solvable = false;
-    private Node finalNode;
+    private final boolean solvable;
+    private SearchNode finalNode;
 
-    private class Node implements Comparable<Node> {
-        Board board;
-        Node previous;
-        int moves;
+    private class SearchNode implements Comparable<SearchNode> {
+        private final Board board;
+        private final SearchNode prev;
+        private final int moves;
+        private final int priority;
 
-        Node(Board b, Node p, int m) {
+        SearchNode(Board b, SearchNode p, int m) {
             this.board = b;
-            this.previous = p;
+            this.prev = p;
             this.moves = m;
+            this.priority = m + b.manhattan();
         }
         Board getBoard() {
             return this.board;
         }
-        Node getPrevious() {
-            return this.previous;
+        SearchNode getPrev() {
+            return this.prev;
         }
         int getMoves() {
             return this.moves;
         }
-        int priority(){
-            return this.moves + board.hamming();
+        int priority() {
+            return this.priority;
         }
 
-        public int compareTo(Node that) {
+        public int compareTo(SearchNode that) {
             return priority() - that.priority();
         }
     }
     // find a solution to the initial board (using the A* algorithm)
     public Solver(Board initial) {
-        Node node = new Node(initial, null, 0);
-        searchQueue = new MinPQ<>();
-        searchQueue.insert(node);
-        while(searchQueue.size() > 0) {
-            // System.out.println("--");
-            // System.out.println("queue size = " + searchQueue.size());
-            Node del = searchQueue.delMin();
+        if (initial == null) throw new IllegalArgumentException();
+        MinPQ<SearchNode> minPQ = new MinPQ<>();
+        minPQ.insert(new SearchNode(initial, null, 0));
+
+        while (true) {
+            SearchNode del = minPQ.delMin();
             Board delBoard = del.getBoard();
 
-            // StdOut.println(delBoard);
-            // StdOut.println("board move " + del.getMoves());
 
-            if(delBoard.isGoal()) {
-                // StdOut.println("Goal");
-                if(delBoard.hamming() != 0) {
-                    // StdOut.println("hamming is not zero");
-                    finalNode = null;
-                    solvable = false;
-                } else {
-                    // StdOut.println("hamming ZERO");
-                    finalNode = del;
-                    solvable = true;
-                }
+            if (delBoard.isGoal()) {
+                finalNode = del;
+                solvable = true;
                 break;
             }
 
-            // int delMoves = del.getMoves();
-            for(Board b : delBoard.neighbors()) {
-                // StdOut.println("Neighbor");
-                // StdOut.println(b);
-                if (del.getPrevious() == null ||  (del.getPrevious() != null && !b.equals(del.getPrevious().getBoard()))) {
-                    searchQueue.insert(new Node(b,  del, del.getMoves() + 1));
+            if (delBoard.manhattan() == 2 && delBoard.twin().isGoal()) {
+                finalNode = null;
+                solvable = false;
+                break;
+            }
+
+            for (Board b : delBoard.neighbors()) {
+                if (del.getPrev() == null || !b.equals(del.getPrev().getBoard())) {
+                    minPQ.insert(new SearchNode(b, del, del.getMoves() + 1));
                 }
             }
         }
@@ -90,19 +80,20 @@ public class Solver {
 
     // min number of moves to solve initial board
     public int moves() {
-        if(isSolvable()) return this.finalNode.getMoves();
+        if (solvable) return finalNode.getMoves();
         else return -1;
     }
 
     // sequence of boards in a shortest solution
     public Iterable<Board> solution() {
-        if(!isSolvable()) return null;
+        if (!isSolvable()) return null;
 
-        List<Board> tracks = new LinkedList<>();
+        Stack<Board> tracks = new Stack<>();
+        SearchNode checkNode = finalNode;
 
-        while (finalNode != null) {
-            ((LinkedList<Board>) tracks).addFirst(finalNode.getBoard());
-            finalNode = finalNode.getPrevious();
+        while (checkNode != null) {
+            tracks.push(checkNode.getBoard());
+            checkNode = checkNode.getPrev();
         }
         return tracks;
     }
@@ -112,13 +103,11 @@ public class Solver {
         // create initial board from file
         In in = new In(args[0]);
         int n = in.readInt();
-
-        int[][] tiles = new int[n][n];
-
+        int[][] blocks = new int[n][n];
         for (int i = 0; i < n; i++)
             for (int j = 0; j < n; j++)
-                tiles[i][j] = in.readInt();
-        Board initial = new Board(tiles);
+                blocks[i][j] = in.readInt();
+        Board initial = new Board(blocks);
 
         // solve the puzzle
         Solver solver = new Solver(initial);

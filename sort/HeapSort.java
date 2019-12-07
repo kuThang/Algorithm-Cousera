@@ -10,34 +10,38 @@ public class HeapSort {
 
     public static <Key extends Comparable<Key>> void sort(Key[] a) {
         int N = a.length;
-        for (int k = N/2; k >= 1; k--) sink(a, k, N);
+        // create heap order
+        for (int i = N/2; i > 0; i--) sink(a, i, N);
 
-        while (N > 1) {
+        // sort array by pick last to first
+        while(N > 1) {
             exchange(a, 1, N);
             sink(a, 1, --N);
         }
-
     }
 
-    private static <Key extends Comparable<Key>> void sink ( Key[] a, int k, int N) {
-        while (2*k <= N) {
-            int j = 2 * k;
-            if (j < N && less(a, j, j+1)) j++;
-            if (!less(a, k, j)) break;
-            exchange(a, k, j);
-            k = j;
+    private static <Key extends Comparable<Key>> void sink(Key[] a, int i, int N) {
+        while( 2 * i <= N) {
+            int j = 2 * i;
+            // choose larger number between (2*i) and (2*i + 1)
+            if( j < N && less(a, j, j + 1)) j++;
+            if(!less(a, i, j)) break;
+            // exchange 2 key and continue
+            exchange(a, i, j);
+            i = j;
         }
     }
 
     private static void exchange(Comparable[] a, int i, int j) {
-        Comparable temp = a[i - 1];
-        a[i - 1] = a[j -1];
-        a[j - 1] =temp;
+        Comparable temp = a[i -1];
+        a[i - 1] = a[j - 1];
+        a[j - 1] = temp;
     }
 
-    private static <Key extends Comparable<Key>>  boolean less(Key[] a, int v, int w) {
-        return a[v-1].compareTo(a[w-1]) < 0;
+    private static <Key extends Comparable<Key>> boolean less(Key[] a, int v, int w) {
+        return a[v -1].compareTo(a[w - 1]) < 0;
     }
+
 
 
     public static void main(String[] args) {

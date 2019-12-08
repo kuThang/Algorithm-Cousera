@@ -10,7 +10,6 @@ import edu.princeton.cs.algs4.Stopwatch;
 import java.util.LinkedList;
 
 public class BinarySearchTree<Key extends Comparable<Key>, Value>{
-    private int size = 0;
     private Node root;
 
     private class Node implements Comparable<Key> {
@@ -22,6 +21,8 @@ public class BinarySearchTree<Key extends Comparable<Key>, Value>{
             this.key = k;
             this.val = v;
             this.count = count;
+            this.right = null;
+            this.left = null;
         }
 
         @Override
@@ -39,6 +40,9 @@ public class BinarySearchTree<Key extends Comparable<Key>, Value>{
         else return size(node.left);
     }
 
+    /**
+     * How many keys <= k
+     */
     public int rank(Key key) {
         return rank(root, key);
     }
@@ -91,6 +95,10 @@ public class BinarySearchTree<Key extends Comparable<Key>, Value>{
             return node;
         }
     }
+
+     /**
+     * How many keys >= k
+     */
     public Key ceiling(Key key) {
         Node node = ceiling(root, key);
         if (node == null) return null;
@@ -140,7 +148,8 @@ public class BinarySearchTree<Key extends Comparable<Key>, Value>{
     }
 
     private Node min(Node node) {
-        while (node != null && node.left != null) {
+        if(node == null) throw new NoSuchElementException();
+        while (node.left != null) {
             node = node.left;
         }
         return node;
@@ -212,12 +221,14 @@ public class BinarySearchTree<Key extends Comparable<Key>, Value>{
     }
 
     public Key getMin() {
+        if(root == null) throw new NoSuchElementException();
         Node min = min(root);
         if (min != null) return min.key;
         else return null;
     }
 
     public Key getMax() {
+        if(root == null) throw new NoSuchElementException();
         Node max = max(root);
         if (max != null) return max.key;
         else return null;

@@ -11,7 +11,7 @@ import java.util.LinkedList;
 import java.util.TreeSet;
 
 public class PointSET {
-    private TreeSet<Point2D> pointSet;
+    private final TreeSet<Point2D> pointSet;
     public PointSET() { // construct an empty set of points
         pointSet = new TreeSet<>();
     }
